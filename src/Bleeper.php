@@ -2,40 +2,35 @@
 namespace Bleeper;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
 
 class Bleeper
 {
-	public $endPoint = 'http://localhost:3000';
+	public $baseUrl = 'http://localhost:3000';
 	public $jwt;
-	public $user;
+	public $apiKey;
 
-	public function createUser($user)
+	public function __construct(string $apiKey)
 	{
-		$body = [
-			'user_name' => $user['name'],
-			'password' => $user['password'],
-			'email' => $user['email'],
-			'role' => $user['role'],
-			'status' => $user['status'],
-		];
-		$url = $this->endPoint . '/api/users';
+		$this->apiKey = $apiKey;
+	}
+
+	public function messageList(string $jwt)
+	{
+		$url = $this->baseUrl . '/api/messages';
 		$client = new GuzzleClient();
-		$response = $client->request('POST', $url, [
+		$response = $client->request('GET', $url, [
 			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			],
-			'form_params' => $body,
+				'Content-Type' => 'application/json',
+				'Authorization' => 'Bearer ' . $jwt,
+			]
 		]);
-		$reason = $response->getReasonPhrase();
 		$jsonDecodeResponse = json_decode($response->getBody()->getContents(), true);
 		return $jsonDecodeResponse;
 	}
 
-	public function sendMessage($jwt, $telefono, $message)
+	public function sendMessage(string $jwt, string $telefono, string $message)
 	{
-		$url = $this->endPoint . '/api/messages/send';
+		$url = $this->baseUrl . '/api/messages/send';
 		$client = new GuzzleClient();
 		$response = $client->request('POST', $url, [
 			'headers' => [
@@ -47,27 +42,24 @@ class Bleeper
 				'contact_phone_number' => $telefono,
 			],
 		]);
+		$jsonDecodeResponse = json_decode($response->getBody()->getContents(), true);
+		return $jsonDecodeResponse;
 	}
 
-	public function login($email, $pass)
+	public function getToken()
 	{
-		try {
-			$url = $this->endPoint . '/login';
-			$client = new GuzzleClient();
-			$response = $client->request('POST', $url, [
-				'headers' => [
-					'Content-Type' => 'application/x-www-form-urlencoded',
-				],
-				'body' => [
-					'password' => $email,
-					'email' => $email,
-				],
-			]);
-		}
-		catch (ConnectException | ClientException $e)
-		{
-			return ["status" => false, "messages" => "Problemas con el WS al obtener token"];
-		}
+		$url = $this->baseUrl . '/login';
+		$client = new GuzzleClient();
+		$response = $client->request('POST', $url, [
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			],
+			'body' => [
+				'api_key' => $this->apiKey,
+			],
+		]);
+		$jsonDecodeResponse = json_decode($response->getBody()->getContents(), true);
+		return $jsonDecodeResponse;
 	}
 
 }
