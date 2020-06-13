@@ -7,23 +7,18 @@ use GuzzleHttp\Exception\ConnectException;
 
 class Bleeper
 {
-	public $endPoint = null;
-	public $jwt = null;
-
-	public function __construct(string $endPoint, string $jwt)
-	{
-		$this->endPoint = $endPoint;
-		$this->jwt = $jwt;
-	}
+	public $endPoint = 'http://localhost:3000';
+	public $jwt;
+	public $user;
 
 	public function createUser($user)
 	{
 		$body = [
-			'user_name' => $user->name,
-			'password' => $user->secret,
-			'email' => $user->email,
-			'role' => $user->role->name,
-			'status' => '1',
+			'user_name' => $user['name'],
+			'password' => $user['password'],
+			'email' => $user['email'],
+			'role' => $user['role'],
+			'status' => $user['status'],
 		];
 		$url = $this->endPoint . '/api/users';
 		$client = new GuzzleClient();
@@ -31,9 +26,27 @@ class Bleeper
 			'headers' => [
 				'Content-Type' => 'application/x-www-form-urlencoded',
 			],
-			'body' => $body,
+			'form_params' => $body,
 		]);
-		return $response;
+		$reason = $response->getReasonPhrase();
+		$jsonDecodeResponse = json_decode($response->getBody()->getContents(), true);
+		return $jsonDecodeResponse;
+	}
+
+	public function sendMessage($jwt, $telefono, $message)
+	{
+		$url = $this->endPoint . '/api/messages/send';
+		$client = new GuzzleClient();
+		$response = $client->request('POST', $url, [
+			'headers' => [
+				'Content-Type' => 'application/json',
+				'Authorization' => 'Bearer ' . $jwt,
+			],
+			'json' => [
+				'text' => $message,
+				'contact_phone_number' => $telefono,
+			],
+		]);
 	}
 
 	public function login($email, $pass)
