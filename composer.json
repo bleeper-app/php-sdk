@@ -1,0 +1,24 @@
+{
+    "name": "bleeper/php-sdk",
+    "type": "package",
+    "authors": [
+        {
+            "name": "Carlos alva",
+            "email": "carlos.alva.sandoval@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+          "Bleeper\\": "src"
+        }
+    },
+    "config" : {
+        "optimize-autoloader": true
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}
