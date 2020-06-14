@@ -6,7 +6,6 @@ use GuzzleHttp\Client as GuzzleClient;
 class Bleeper
 {
 	public $baseUrl = 'http://localhost:3000';
-	public $jwt;
 	public $apiKey;
 
 	public function __construct(string $apiKey)
@@ -14,36 +13,39 @@ class Bleeper
 		$this->apiKey = $apiKey;
 	}
 
-	public function messageList(string $jwt)
+	public function messageList(string $token, string $cellphone)
 	{
 		$url = $this->baseUrl . '/api/messages';
 		$client = new GuzzleClient();
 		$response = $client->request('GET', $url, [
 			'headers' => [
 				'Content-Type' => 'application/json',
-				'Authorization' => 'Bearer ' . $jwt,
+				'Authorization' => 'Bearer ' . $token,
+			],
+			'form_params' => [
+				'cellphone' => $cellphone
 			]
 		]);
-		$jsonDecodeResponse = json_decode($response->getBody()->getContents(), true);
-		return $jsonDecodeResponse;
+		return $this->getBodyResponse($response);
 	}
 
-	public function sendMessage(string $jwt, string $telefono, string $message)
+	public function sendMessage(string $token, string $telefono, string $message, string $attachment_url = null)
 	{
 		$url = $this->baseUrl . '/api/messages/send';
 		$client = new GuzzleClient();
 		$response = $client->request('POST', $url, [
 			'headers' => [
 				'Content-Type' => 'application/json',
-				'Authorization' => 'Bearer ' . $jwt,
+				'Authorization' => 'Bearer ' . $token,
 			],
-			'json' => [
-				'text' => $message,
-				'contact_phone_number' => $telefono,
+			'form_params' => [
+				'from' =>'',
+				'message' => $message,
+				'attachment_url'=>  $attachment,
+				'to' => $telefono,
 			],
 		]);
-		$jsonDecodeResponse = json_decode($response->getBody()->getContents(), true);
-		return $jsonDecodeResponse;
+		return $this->getBodyResponse($response);
 	}
 
 	public function getToken()
@@ -58,8 +60,12 @@ class Bleeper
 				'api_key' => $this->apiKey,
 			],
 		]);
-		$jsonDecodeResponse = json_decode($response->getBody()->getContents(), true);
-		return $jsonDecodeResponse;
+		return $this->getBodyResponse($response);
+	}
+
+	private function getBodyResponse($response)
+	{
+		return json_decode($response->getBody()->getContents(), true);
 	}
 
 }
