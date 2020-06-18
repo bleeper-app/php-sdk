@@ -13,9 +13,9 @@ class Bleeper
 		$this->apiKey = $apiKey;
 	}
 
-	public function messageList(string $token, string $cellphone)
+	public function messageList(string $cellphone, string $token, int $currentPage, int $pageSize)
 	{
-		$url = $this->baseUrl . '/api/messages';
+		$url = $this->baseUrl . '/api/message/'.$currentPage.'/'.$pageSize;
 		$client = new GuzzleClient();
 		$response = $client->request('GET', $url, [
 			'headers' => [
@@ -29,20 +29,21 @@ class Bleeper
 		return $this->getBodyResponse($response);
 	}
 
-	public function sendMessage(string $token, string $telefono, string $message, string $attachment_url = null)
+	public function sendMessage(string $token, string $from, string $to, string $message, string $attachment_url = null, $saveLocal = false)
 	{
-		$url = $this->baseUrl . '/api/messages/send';
+		$url = $this->baseUrl . '/api/send_message';
 		$client = new GuzzleClient();
 		$response = $client->request('POST', $url, [
 			'headers' => [
-				'Content-Type' => 'application/json',
+				'Content-Type' => 'application/x-www-form-urlencoded',
 				'Authorization' => 'Bearer ' . $token,
 			],
 			'form_params' => [
-				'from' =>'',
+				'from' => $from,
 				'message' => $message,
 				'attachment_url'=>  $attachment,
-				'to' => $telefono,
+				'to' => $to,
+				'save_local'=> $saveLocal
 			],
 		]);
 		return $this->getBodyResponse($response);
@@ -50,15 +51,13 @@ class Bleeper
 
 	public function getToken()
 	{
-		$url = $this->baseUrl . '/login';
+		$url = $this->baseUrl . '/api/user/token';
 		$client = new GuzzleClient();
 		$response = $client->request('POST', $url, [
 			'headers' => [
 				'Content-Type' => 'application/x-www-form-urlencoded',
-			],
-			'body' => [
-				'api_key' => $this->apiKey,
-			],
+				'Authorization' => 'Beader '.$this->apiKey
+			]
 		]);
 		return $this->getBodyResponse($response);
 	}
