@@ -5,7 +5,7 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class Bleeper
 {
-	public $baseUrl = 'http://localhost:3000';
+	public $baseUrl = 'http://localhost:3000/api';
 	public $apiKey;
 
 	public function __construct($apiKey)
@@ -15,7 +15,7 @@ class Bleeper
 
 	public function messageList($cellphone, $token, $currentPage, $pageSize)
 	{
-		$url = $this->baseUrl . '/api/message/' . $currentPage . '/' . $pageSize;
+		$url = $this->baseUrl . '/message/' . $currentPage . '/' . $pageSize;
 		$client = new GuzzleClient();
 		$response = $client->request('GET', $url, [
 			'headers' => [
@@ -31,7 +31,7 @@ class Bleeper
 
 	public function sendMessage($token, $from, $to, $message, $attachment_url = null, $saveLocal = false)
 	{
-		$url = $this->baseUrl . '/api/send_message';
+		$url = $this->baseUrl . '/send_message';
 		$client = new GuzzleClient();
 		$response = $client->request('POST', $url, [
 			'headers' => [
@@ -51,7 +51,7 @@ class Bleeper
 
 	public function getToken()
 	{
-		$url = $this->baseUrl . '/api/user/token';
+		$url = $this->baseUrl . '/user/token';
 		$client = new GuzzleClient();
 		$response = $client->request('POST', $url, [
 			'headers' => [
@@ -75,7 +75,7 @@ class Bleeper
 		}
 	}
 
-	private function getBodyResponse($response)
+	public function getBodyResponse($response)
 	{
 		return json_decode($response->getBody()->getContents(), true);
 	}
