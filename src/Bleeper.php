@@ -13,17 +13,16 @@ class Bleeper
 		$this->apiKey = $apiKey;
 	}
 
-	public function messageList($cellphone, $token, $currentPage, $pageSize)
+	public function messageList($cellphone, $token, $currentPage = 1, $pageSize=10)
 	{
 		$url = $this->baseUrl . '/message/' . $currentPage . '/' . $pageSize;
 		$client = new GuzzleClient();
 		$response = $client->request('GET', $url, [
 			'headers' => [
-				'Content-Type' => 'application/json',
 				'Authorization' => 'Bearer ' . $token,
 			],
-			'form_params' => [
-				'cellphone' => $cellphone,
+			'query' => [
+				'cell_phone' => $cellphone,
 			],
 		]);
 		return $this->getBodyResponse($response);
@@ -56,7 +55,7 @@ class Bleeper
 		$response = $client->request('POST', $url, [
 			'headers' => [
 				'Content-Type' => 'application/x-www-form-urlencoded',
-				'Authorization' => 'Beader ' . $this->apiKey,
+				'Authorization' => 'Bearer ' . $this->apiKey,
 			],
 		]);
 		return $this->getBodyResponse($response);
