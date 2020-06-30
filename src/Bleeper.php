@@ -21,7 +21,7 @@ class Bleeper
 			'headers' => [
 				'Authorization' => 'Bearer ' . $token,
 			],
-			'query' => [
+			'form_params' => [
 				'cell_phone' => $cellphone,
 			],
 		]);
