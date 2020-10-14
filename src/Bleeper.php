@@ -35,7 +35,7 @@ class Bleeper
 		$token = $this->getToken();
 		$url = $this->baseUrl . '/message/sendMessage';
 		$client = new GuzzleClient();
-		$response = $client->request('POST', $url, [
+		$response = $client->request('GET', $url, [
 			'headers' => [
 				'Content-Type' => 'application/x-www-form-urlencoded',
 				'Authorization' => 'Bearer ' . $token,
