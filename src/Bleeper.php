@@ -35,7 +35,7 @@ class Bleeper
 		$token = $this->getToken();
 		$url = $this->baseUrl . '/message/sendMessage';
 		$client = new GuzzleClient();
-		$response = $client->request('GET', $url, [
+		$response = $client->request('POST', $url, [
 			'headers' => [
 				'Content-Type' => 'application/x-www-form-urlencoded',
 				'Authorization' => 'Bearer ' . $token,
@@ -71,7 +71,7 @@ class Bleeper
 	{
 		$url = $this->baseUrl . '/user/token';
 		$client = new GuzzleClient();
-		$response = $client->request('POST', $url, [
+		$response = $client->request('GET', $url, [
 			'headers' => [
 				'Content-Type' => 'application/x-www-form-urlencoded',
 				'Authorization' => 'Bearer ' . $this->apiKey,
